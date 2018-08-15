@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
-NRPE_DOWNLOAD_URL=http://softlayer-ams.dl.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.15/nrpe-2.15.tar.gz
-PLUGINS_DOWNLOAD_URL=https://www.nagios-plugins.org/download/nagios-plugins-1.5.tar.gz
+NRPE_VERSION=3.2.1
+PLUGINS_VERSION=2.2.1
+NRPE_DOWNLOAD_URL=https://github.com/NagiosEnterprises/nrpe/archive/nrpe-$NRPE_VERSION.tar.gz
+PLUGINS_DOWNLOAD_URL=https://nagios-plugins.org/download/nagios-plugins-$PLUGINS_VERSION.tar.gz
 WORKING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 BUILD_DIR="${WORKING_DIR}/build"
@@ -17,7 +19,7 @@ function find_packages() {
         echo "OK"
     else
         echo "Did not find Packages."
-        echo "Please download Packages from http://s.sudre.free.fr/Software/Packages/ and install it"
+        echo "Please download Packages from http://s.sudre.free.fr/Software/Packages/about.html and install it"
         exit 1
     fi
 
@@ -56,10 +58,10 @@ function build_nrpe() {
   echo "================"
   cd "$BUILD_DIR"
   echo -n "Downloading... "
-  curl -L $NRPE_DOWNLOAD_URL > nrpe.tar.gz 2> nrpe-download-err.log
+  curl -L $NRPE_DOWNLOAD_URL > nrpe-$NRPE_VERSION.tar.gz 2> nrpe-download-err.log
   print_status
-  tar xfvz nrpe.tar.gz 2> nrpe-unpack.log
-  mv nrpe-2.15 nrpe
+  tar xfvz nrpe-$NRPE_VERSION.tar.gz 2> nrpe-unpack.log
+  mv nrpe-$NRPE_VERSION nrpe
 
   cd "$BUILD_DIR/nrpe"
   echo -n "Configuring NRPE... "
@@ -78,12 +80,12 @@ function build_nagios_plugins() {
   echo "=========================="
   cd "$BUILD_DIR"
   echo -n "Downloading... "
-  curl $PLUGINS_DOWNLOAD_URL > plugins.tar.gz 2> plugins-download-err.log
+  curl $PLUGINS_DOWNLOAD_URL > plugins-$PLUGINS_VERSION.tar.gz 2> plugins-download-err.log
   print_status
   echo -n "Unpacking... "
-  tar xfvz plugins.tar.gz 2> plugins-unpack.log
+  tar xfvz plugins-$PLUGINS_VERSION.tar.gz 2> plugins-unpack.log
   print_status
-  mv nagios-plugins-1.5 nagios-plugins
+  mv nagios-plugins-$PLUGINS_VERSION nagios-plugins
   cd nagios-plugins
   echo -n "Configuring Nagios Plugins... "
   ./configure > "../plugins-configure.log" 2>&1
